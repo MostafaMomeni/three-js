@@ -22,6 +22,11 @@ export default class Environment {
   }
 
   addMeshes() {
+    const group = new THREE.Group()
+    group.position.y = 10
+    group.rotation.x = 90
+    this.scene.add(group)
+
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({ color: "blue" });
 
@@ -29,16 +34,23 @@ export default class Environment {
     this.cubeMesh.position.y = 10;
     this.cubeMesh.rotation.x = 0.5;
     this.cubeMesh.rotation.z = 0.5;
-    this.physics.add(this.cubeMesh)
+    this.cubeMesh.scale.set(3,3,3)
+    this.physics.add(this.cubeMesh , "dynamic")
     
     this.cubeMesh2 = new THREE.Mesh(geometry, material);
     this.cubeMesh2.position.y = 10;
     this.cubeMesh2.position.x = 4;
     this.cubeMesh2.rotation.x = 0.5;
     this.cubeMesh2.rotation.z = 0.5;
-    this.physics.add(this.cubeMesh2)
-
-    this.scene.add(this.cubeMesh, this.cubeMesh2);
-
+    this.physics.add(this.cubeMesh2 , "dynamic")
+    
+    group.add(this.cubeMesh, this.cubeMesh2);
+    
+    const groundGeometry = new THREE.BoxGeometry(10, 1, 10);
+    const groundMaterial = new THREE.MeshStandardMaterial({ color: "aqua" });
+    this.groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+    this.scene.add(this.groundMesh);
+    this.physics.add(this.groundMesh , "fixed")
+    
   }
 }

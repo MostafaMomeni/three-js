@@ -14,12 +14,6 @@ export default class Physics {
       this.world = new RAPIER.World(gravity);
       this.rapier = RAPIER;
 
-      // three js
-      const groundGeometry = new THREE.BoxGeometry(10, 1, 10);
-      const groundMaterial = new THREE.MeshStandardMaterial({ color: "aqua" });
-      this.groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
-      this.scene.add(this.groundMesh);
-
       // rapier
       const groundRigidBodyType = RAPIER.RigidBodyDesc.fixed();
       this.groundRigidBody = this.world.createRigidBody(groundRigidBodyType);
@@ -32,16 +26,38 @@ export default class Physics {
     });
   }
 
-  add(mesh) {
-    const rigidBodyType = this.rapier.RigidBodyDesc.dynamic();
+  add(mesh, type) {
+    let rigidBodyType;
+    if (type === "dynamic") {
+      rigidBodyType = this.rapier.RigidBodyDesc.dynamic();
+    } else if (type === "fixed") {
+      rigidBodyType = this.rapier.RigidBodyDesc.fixed();
+    }
     this.rigidBody = this.world.createRigidBody(rigidBodyType);
-    this.rigidBody.setTranslation(mesh.position);
-    this.rigidBody.setRotation(mesh.quaternion);
+    const worldPosition = mesh.getWorldPosition(new THREE.Vector3());
+    const worldRotation = mesh.getWorldQuaternion(new THREE.Quaternion());
+    this.rigidBody.setTranslation(worldPosition);
+    this.rigidBody.setRotation(worldRotation);
 
-    const colliderType = this.rapier.ColliderDesc.cuboid(0.5, 0.5, 0.5);
+    const size = this.computeCuboidDimensions(mesh);
+
+    const colliderType = this.rapier.ColliderDesc.cuboid(
+      size.x / 2,
+      size.y / 2,
+      size.z / 2
+    );
     this.world.createCollider(colliderType, this.rigidBody);
 
     this.meshMap.set(mesh, this.rigidBody);
+  }
+
+  computeCuboidDimensions(mesh) {
+    mesh.geometry.computeBoundingBox();
+    const size = mesh.geometry.boundingBox.getSize(new THREE.Vector3());
+    const worldScale = mesh.getWorldScale(new THREE.Vector3());
+    size.multiply(worldScale);
+
+    return size;
   }
 
   loop() {
@@ -50,8 +66,22 @@ export default class Physics {
     this.world.step();
 
     this.meshMap.forEach((rigidBody, mesh) => {
-      const position = rigidBody.translation();
-      const rotation = rigidBody.rotation();
+      const position = new THREE.Vector3().copy(rigidBody.translation());
+      const rotation = new THREE.Quaternion().copy(rigidBody.rotation());
+
+      // mesh.parent.worldToLocal(position)
+
+      position.applyMatrix4(
+        new THREE.Matrix4().copy(mesh.parent.matrixWorld).invert()
+      );
+
+      const inverseParentMatrix = new THREE.Matrix4()
+        .extractRotation(mesh.parent.matrixWorld)
+        .invert();
+
+      const inverseParentRotation =
+        new THREE.Quaternion().setFromRotationMatrix(inverseParentMatrix);
+      rotation.premultiply(inverseParentRotation);
 
       mesh.position.copy(position);
       mesh.quaternion.copy(rotation);
