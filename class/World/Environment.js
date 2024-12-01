@@ -27,30 +27,42 @@ export default class Environment {
     group.rotation.x = 90
     this.scene.add(group)
 
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const ballGeometry = new THREE.SphereGeometry(1,32,32);
     const material = new THREE.MeshBasicMaterial({ color: "blue" });
-
-    this.cubeMesh = new THREE.Mesh(geometry, material);
+    
+    this.cubeMesh = new THREE.Mesh(ballGeometry, material);
     this.cubeMesh.position.y = 10;
     this.cubeMesh.rotation.x = 0.5;
     this.cubeMesh.rotation.z = 0.5;
-    this.cubeMesh.scale.set(3,3,3)
-    this.physics.add(this.cubeMesh , "dynamic")
+    group.add(this.cubeMesh);
+    this.physics.add(this.cubeMesh , "dynamic" , "ball")
     
-    this.cubeMesh2 = new THREE.Mesh(geometry, material);
+    const boxGeometry = new THREE.BoxGeometry(1,1,1);
+    this.cubeMesh2 = new THREE.Mesh(boxGeometry, material);
     this.cubeMesh2.position.y = 10;
     this.cubeMesh2.position.x = 4;
     this.cubeMesh2.rotation.x = 0.5;
     this.cubeMesh2.rotation.z = 0.5;
-    this.physics.add(this.cubeMesh2 , "dynamic")
+    group.add(this.cubeMesh2);
+    this.physics.add(this.cubeMesh2 , "dynamic" , "cuboid")
+
+    const torusKnotGeometry = new THREE.TorusKnotGeometry(1 , 0.3 , 100 , 16);
+    this.cubeMesh3 = new THREE.Mesh(torusKnotGeometry, material);
+    this.cubeMesh3.position.y = 10;
+    this.cubeMesh3.position.x = -3;
+    this.cubeMesh3.rotation.x = 0.5;
+    this.cubeMesh3.rotation.z = 0.5;
+    this.cubeMesh3.scale.set(1,2,3)
+
+    group.add(this.cubeMesh3);
+    this.physics.add(this.cubeMesh3 , "dynamic" , "trimesh")
     
-    group.add(this.cubeMesh, this.cubeMesh2);
     
-    const groundGeometry = new THREE.BoxGeometry(10, 1, 10);
-    const groundMaterial = new THREE.MeshStandardMaterial({ color: "aqua" });
+    const groundGeometry = new THREE.BoxGeometry(20, 1, 20);
+    const groundMaterial = new THREE.MeshStandardMaterial({ color: "turquoise" });
     this.groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
     this.scene.add(this.groundMesh);
-    this.physics.add(this.groundMesh , "fixed")
+    this.physics.add(this.groundMesh , "fixed" , "cuboid")
     
   }
 }

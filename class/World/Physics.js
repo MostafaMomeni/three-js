@@ -14,19 +14,12 @@ export default class Physics {
       this.world = new RAPIER.World(gravity);
       this.rapier = RAPIER;
 
-      // rapier
-      const groundRigidBodyType = RAPIER.RigidBodyDesc.fixed();
-      this.groundRigidBody = this.world.createRigidBody(groundRigidBodyType);
-
-      const groundColliderType = RAPIER.ColliderDesc.cuboid(5, 0.5, 5);
-      this.world.createCollider(groundColliderType, this.groundRigidBody);
-
       this.rapierLoaded = true;
       appStateStore.setState({ physicsReady: true });
     });
   }
 
-  add(mesh, type) {
+  add(mesh, type, collider) {
     let rigidBodyType;
     if (type === "dynamic") {
       rigidBodyType = this.rapier.RigidBodyDesc.dynamic();
@@ -34,19 +27,35 @@ export default class Physics {
       rigidBodyType = this.rapier.RigidBodyDesc.fixed();
     }
     this.rigidBody = this.world.createRigidBody(rigidBodyType);
+
+    let colliderType;
+
+    switch (collider) {
+      case "cuboid":
+        const size = this.computeCuboidDimensions(mesh);
+        colliderType = this.rapier.ColliderDesc.cuboid(
+          size.x / 2,
+          size.y / 2,
+          size.z / 2
+        );
+        this.world.createCollider(colliderType, this.rigidBody);
+        break;
+      case "ball":
+        const radius = this.computeBallDimensions(mesh);
+        colliderType = this.rapier.ColliderDesc.ball(radius);
+        this.world.createCollider(colliderType, this.rigidBody);
+        break;
+        case "trimesh":
+          const {vertices , indices} = this.computeTrimeshDimensions(mesh)
+          colliderType = this.rapier.ColliderDesc.trimesh(vertices , indices)
+          this.world.createCollider(colliderType, this.rigidBody);
+        break;
+    }
+
     const worldPosition = mesh.getWorldPosition(new THREE.Vector3());
     const worldRotation = mesh.getWorldQuaternion(new THREE.Quaternion());
     this.rigidBody.setTranslation(worldPosition);
     this.rigidBody.setRotation(worldRotation);
-
-    const size = this.computeCuboidDimensions(mesh);
-
-    const colliderType = this.rapier.ColliderDesc.cuboid(
-      size.x / 2,
-      size.y / 2,
-      size.z / 2
-    );
-    this.world.createCollider(colliderType, this.rigidBody);
 
     this.meshMap.set(mesh, this.rigidBody);
   }
@@ -58,6 +67,35 @@ export default class Physics {
     size.multiply(worldScale);
 
     return size;
+  }
+
+  computeBallDimensions(mesh) {
+    mesh.geometry.computeBoundingSphere();
+    const radius = mesh.geometry.boundingSphere.radius;
+    const worldScale = mesh.getWorldScale(new THREE.Vector3());
+    const maxScale = Math.max(worldScale.x , worldScale.y , worldScale.z)
+
+    return radius * maxScale;
+  }
+
+  computeTrimeshDimensions(mesh) {
+    const vertices = mesh.geometry.attributes.position.array;
+    const indices = mesh.geometry.index.array;
+    const worldScale = mesh.getWorldScale(new THREE.Vector3());
+
+    // const scaledVertices =  []
+
+    // for(let i = 0 ; i< vertices.length ; i +=3){
+    //   scaledVertices.push(vertices[i] * worldScale.x)
+    //   scaledVertices.push(vertices[i+1] * worldScale.y)
+    //   scaledVertices.push(vertices[i+2] * worldScale.z)
+    // }
+
+    const scaledVertices = vertices.map((vertex , index) => {
+      return vertex * worldScale.getComponent(index % 3)
+    })
+
+    return scaledVertices , indices;
   }
 
   loop() {
