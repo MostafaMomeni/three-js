@@ -6,6 +6,8 @@ import World from "./World/World";
 import Resize from "./Utils/Resize";
 import AssetLoader from "./Utils/Assetloader";
 import Preloader from "./Ui/Preloader";
+import Character from "./World/Character";
+import InputController from "./Ui/InputController";
 
 let instance = null;
 
@@ -22,6 +24,8 @@ export default class App {
     this.loop = new Loop();
     this.resize = new Resize();
     this.assetLoader = new AssetLoader()
+    this.character = new Character()
     this.preloader = new Preloader()
+    this.inputController = new InputController()
   }
 }

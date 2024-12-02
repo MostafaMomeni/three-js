@@ -9,3 +9,14 @@ export const sizesStore = createStore(()=> ({
 export const appStateStore = createStore(()=>({
     physicsReady : false,
 }))
+
+export const inputStore = createStore(()=>({
+    forward : false,
+    backward : false,
+    left : false,
+    right : false,
+    up : false,
+    down : false,
+    rLeft : false,
+    rRight : false,
+}))

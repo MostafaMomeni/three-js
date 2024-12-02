@@ -21,12 +21,24 @@ export default class Physics {
 
   add(mesh, type, collider) {
     let rigidBodyType;
-    if (type === "dynamic") {
-      rigidBodyType = this.rapier.RigidBodyDesc.dynamic();
-    } else if (type === "fixed") {
-      rigidBodyType = this.rapier.RigidBodyDesc.fixed();
+    switch (type) {
+      case "dynamic":
+        rigidBodyType = this.rapier.RigidBodyDesc.dynamic();
+        break;
+      case "fixed":
+        rigidBodyType = this.rapier.RigidBodyDesc.fixed();
+        break;
+      case "kinematic":
+        rigidBodyType = this.rapier.RigidBodyDesc.kinematicPositionBased();
+        break;
     }
+
     this.rigidBody = this.world.createRigidBody(rigidBodyType);
+
+    const worldPosition = mesh.getWorldPosition(new THREE.Vector3());
+    const worldRotation = mesh.getWorldQuaternion(new THREE.Quaternion());
+    this.rigidBody.setTranslation(worldPosition);
+    this.rigidBody.setRotation(worldRotation);
 
     let colliderType;
 
@@ -45,19 +57,15 @@ export default class Physics {
         colliderType = this.rapier.ColliderDesc.ball(radius);
         this.world.createCollider(colliderType, this.rigidBody);
         break;
-        case "trimesh":
-          const {vertices , indices} = this.computeTrimeshDimensions(mesh)
-          colliderType = this.rapier.ColliderDesc.trimesh(vertices , indices)
-          this.world.createCollider(colliderType, this.rigidBody);
+      case "trimesh":
+        const { scaledVertices, indices } = this.computeTrimeshDimensions(mesh);
+        colliderType = this.rapier.ColliderDesc.trimesh(scaledVertices, indices);
+        this.world.createCollider(colliderType, this.rigidBody);
         break;
     }
 
-    const worldPosition = mesh.getWorldPosition(new THREE.Vector3());
-    const worldRotation = mesh.getWorldQuaternion(new THREE.Quaternion());
-    this.rigidBody.setTranslation(worldPosition);
-    this.rigidBody.setRotation(worldRotation);
-
     this.meshMap.set(mesh, this.rigidBody);
+    return this.rigidBody
   }
 
   computeCuboidDimensions(mesh) {
@@ -73,7 +81,7 @@ export default class Physics {
     mesh.geometry.computeBoundingSphere();
     const radius = mesh.geometry.boundingSphere.radius;
     const worldScale = mesh.getWorldScale(new THREE.Vector3());
-    const maxScale = Math.max(worldScale.x , worldScale.y , worldScale.z)
+    const maxScale = Math.max(worldScale.x, worldScale.y, worldScale.z);
 
     return radius * maxScale;
   }
@@ -91,11 +99,11 @@ export default class Physics {
     //   scaledVertices.push(vertices[i+2] * worldScale.z)
     // }
 
-    const scaledVertices = vertices.map((vertex , index) => {
-      return vertex * worldScale.getComponent(index % 3)
-    })
+    const scaledVertices = vertices.map((vertex, index) => {
+      return vertex * worldScale.getComponent(index % 3);
+    });
 
-    return scaledVertices , indices;
+    return {scaledVertices, indices};
   }
 
   loop() {
@@ -103,7 +111,7 @@ export default class Physics {
 
     this.world.step();
 
-    this.meshMap.forEach((rigidBody, mesh) => {
+    this.meshMap?.forEach((rigidBody, mesh) => {
       const position = new THREE.Vector3().copy(rigidBody.translation());
       const rotation = new THREE.Quaternion().copy(rigidBody.rotation());
 

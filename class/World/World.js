@@ -3,6 +3,7 @@ import App from "../App";
 import Physics from "./Physics";
 import Environment from "./Environment";
 import { appStateStore } from "../Utils/Store";
+import Character from "./Character";
 
 export default class World {
   constructor() {
@@ -14,6 +15,7 @@ export default class World {
     appStateStore.subscribe((state) => {
       if (state.physicsReady) {
         this.environment = new Environment();
+        this.character = new Character();
       }
     });
 
@@ -22,5 +24,6 @@ export default class World {
 
   loop(deltaTime, elapsedTime) {
     this.physics.loop();
+   if(this.character) this.character.loop();
   }
 }
