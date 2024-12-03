@@ -65,7 +65,7 @@ export default class Physics {
     }
 
     this.meshMap.set(mesh, this.rigidBody);
-    return this.rigidBody
+    return {rigidBody :this.rigidBody , collider: this.world.createCollider(colliderType, this.rigidBody)}
   }
 
   computeCuboidDimensions(mesh) {

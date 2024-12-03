@@ -40,6 +40,25 @@ export default class Camera {
 
   loop(){
     this.controls.update()
+    this.character = this.app.world.character?.rigidBody.rigidBody
+    if(this.character){
+      
+      const characterPosition = this.character.translation()
+      const characterRotation = this.character.rotation()
+
+      const cameraOffset = new THREE.Vector3(0 , 30 ,70)
+      cameraOffset.applyQuaternion(characterRotation)
+      cameraOffset.add(characterPosition)
+
+      const targetOffset = new THREE.Vector3(0 , 5 , 0)
+      targetOffset.applyQuaternion(characterRotation)
+      targetOffset.add(characterPosition)
+
+      this.instance.position.lerp(cameraOffset , 0.1)
+      // this.instance.lookAt(targetOffset)
+      this.controls.target.lerp(targetOffset , 0.1)
+
+    }
   }
 
   setResizeListener(){

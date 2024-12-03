@@ -15,8 +15,6 @@ export const inputStore = createStore(()=>({
     backward : false,
     left : false,
     right : false,
-    up : false,
-    down : false,
     rLeft : false,
     rRight : false,
 }))
