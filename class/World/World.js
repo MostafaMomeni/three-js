@@ -12,10 +12,11 @@ export default class World {
 
     this.physics = new Physics();
 
-    appStateStore.subscribe((state) => {
-      if (state.physicsReady) {
+    const unSub = appStateStore.subscribe((state) => {
+      if (state.physicsReady && state.AssetsReady) {
         this.environment = new Environment();
         this.character = new Character();
+        unSub();
       }
     });
 
@@ -24,6 +25,7 @@ export default class World {
 
   loop(deltaTime, elapsedTime) {
     this.physics.loop();
-   if(this.character) this.character.loop(deltaTime);
+     if(this.character) this.character.loop(deltaTime);
+    // if (this.characterController) this.characterController.loop(deltaTime);
   }
 }

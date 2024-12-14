@@ -29,6 +29,7 @@ export default class Render {
     sizesStore.subscribe((event) => {
       this.instance.setSize(event.width, event.height);
       this.instance.setPixelRatio(event.pixelRatio);
+      this.instance.outputEncoding = THREE.sRGBEncoding
     });
   }
 

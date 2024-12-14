@@ -41,6 +41,7 @@ export default class Camera {
   loop(){
     this.controls.update()
     this.character = this.app.world.character?.rigidBody.rigidBody
+    // this.character = this.app.world.characterController?.rigidBody?.rigidBody
     if(this.character){
       
       const characterPosition = this.character.translation()
@@ -54,8 +55,8 @@ export default class Camera {
       targetOffset.applyQuaternion(characterRotation)
       targetOffset.add(characterPosition)
 
-      this.instance.position.lerp(cameraOffset , 0.1)
       // this.instance.lookAt(targetOffset)
+      this.instance.position.lerp(cameraOffset , 0.1)
       this.controls.target.lerp(targetOffset , 0.1)
 
     }

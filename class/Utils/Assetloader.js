@@ -7,6 +7,7 @@ export default class AssetLoader {
     constructor(){
         this.assetStore = assetStore.getState()
         this.assetToLoad = assetToLoad
+        this.addLoadedAsset = assetStore.addLoadedAsset
         this.createLoader()
         this.startLoading()
     }

@@ -1,34 +1,36 @@
 import assetStore from "../Utils/AssetStore";
+import { appStateStore } from "../Utils/Store";
 
 export default class Preloader {
-  // constructor() {
-  //   this.assetStore = assetStore;
+  constructor() {
+    this.assetStore = assetStore;
 
-  //   this.overlay = document.querySelector(".overlay");
-  //   this.loading = document.querySelector(".loading");
-  //   this.startButton = document.querySelector(".start");
+    this.overlay = document.querySelector(".overlay");
+    this.loading = document.querySelector(".loading");
+    this.startButton = document.querySelector(".start");
 
-  //   this.assetStore.subscribe((state) => {
-  //     this.numberOfLoadedAssets = Object.keys(state.loadAssets).length;
-  //     this.numberOfAssetsToLoad = state.assetToLoad.length;
-  //     this.progress = this.numberOfLoadedAssets / this.numberOfAssetsToLoad;
+    this.assetStore.subscribe((state) => {
+      this.numberOfLoadedAssets = Object.keys(state.loadAssets).length;
+      this.numberOfAssetsToLoad = state.assetToLoad.length;
+      this.progress = this.numberOfLoadedAssets / this.numberOfAssetsToLoad;
 
-  //     document.querySelector(".progress").innerHTML = Math.trunc(
-  //       this.progress * 100
-  //     );
+      document.querySelector(".progress").innerHTML = Math.trunc(
+        this.progress * 100
+      );
 
-  //     if (this.progress === 1) {
-  //       this.loading.classList.add("fade");
-  //       setTimeout(() => {
-  //         this.ready();
-  //       }, 500);
+      if (this.progress === 1) {
+        appStateStore.setState({AssetsReady: true})
+        this.loading.classList.add("fade");
+        setTimeout(() => {
+          this.ready();
+        }, 500);
 
-  //       setTimeout(() => {
-  //         this.loading.remove();
-  //       }, 100);
-  //     }
-  //   });
-  // }
+        setTimeout(() => {
+          this.loading.remove();
+        }, 100);
+      }
+    });
+  }
 
   ready() {
     this.startButton.classList.add("fadeIn");

@@ -25,12 +25,6 @@ export default class InputController {
       case "KeyA":
         inputStore.setState({ left: true });
         break;
-      case "ArrowLeft":
-        inputStore.setState({ rLeft: true });
-        break;
-      case "ArrowRight":
-        inputStore.setState({ rRight: true });
-        break;
     }
   }
 
@@ -47,12 +41,6 @@ export default class InputController {
         break;
       case "KeyA":
         inputStore.setState({ left: false });
-        break;
-      case "ArrowLeft":
-        inputStore.setState({ rLeft: false });
-        break;
-      case "ArrowRight":
-        inputStore.setState({ rRight: false });
         break;
     }
   }
