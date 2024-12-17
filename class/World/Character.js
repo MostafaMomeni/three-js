@@ -72,7 +72,7 @@ export default class Character {
     // this.characterRigidBody.setNextKinematicTranslation({ x, y, z });
     // this.characterRigidBody.setNextKinematicRotation({x : x , y : ry , z : rz})
 
-    if (movement.length() !== 0) {
+    if (movement.length()) {
       const angle = Math.atan2(movement.x, movement.z) + Math.PI;
       // this.character.rotation.y = angle
       const characterRotation = new THREE.Quaternion().setFromAxisAngle(
@@ -95,6 +95,6 @@ export default class Character {
       .add(this.characterController.computedMovement());
 
     this.rigidBody.rigidBody.setNextKinematicTranslation(newPosition);
-    this.character.position.copy(this.rigidBody.rigidBody.translation());
+    this.character.position.lerp(this.rigidBody.rigidBody.translation() , 1);
   }
 }
