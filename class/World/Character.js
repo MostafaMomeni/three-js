@@ -81,7 +81,7 @@ export default class Character {
       );
       this.character.quaternion.slerp(characterRotation, 1);
     }
-
+    
     movement.normalize().multiplyScalar(deltaTime * 20);
     movement.y = -1;
 

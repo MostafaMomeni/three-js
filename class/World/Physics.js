@@ -130,7 +130,7 @@ export default class Physics {
       rotation.premultiply(inverseParentRotation);
 
       mesh.position.copy(position);
-      mesh.quaternion.copy(rotation);
+      // mesh.quaternion.copy(rotation);
     });
   }
 }
