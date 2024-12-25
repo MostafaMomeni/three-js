@@ -79,7 +79,7 @@ export default class Character {
         new THREE.Vector3(0, 1, 0),
         angle
       );
-      this.character.quaternion.slerp(characterRotation, 1);
+      this.character.quaternion.slerp(characterRotation, 0.1);
     }
     
     movement.normalize().multiplyScalar(deltaTime * 20);
