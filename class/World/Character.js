@@ -22,14 +22,14 @@ export default class Character {
   }
 
   instantiateCharacter() {
-    const geometry = new THREE.BoxGeometry(4, 7.5, 2);
+    const geometry = new THREE.BoxGeometry(2.6, 7.5, 2);
     const material = new THREE.MeshStandardMaterial({
       color: "green",
       wireframe: true,
-      visible: false
+      visible: true
     });
     this.character = new THREE.Mesh(geometry, material);
-    this.character.position.set(0, 7, 0);
+    this.character.position.set(0, 100, 0);
     if (appStateStore.getState().physicsReady) {
       this.characterController =
         this.physics.world.createCharacterController(0.01);
@@ -82,7 +82,7 @@ export default class Character {
       this.character.quaternion.slerp(characterRotation, 0.1);
     }
     
-    movement.normalize().multiplyScalar(deltaTime * 20);
+    movement.normalize().multiplyScalar(deltaTime * 30);
     movement.y = -1;
 
     this.characterController.computeColliderMovement(

@@ -8,6 +8,7 @@ import AssetLoader from "./Utils/Assetloader";
 import Preloader from "./Ui/Preloader";
 import Character from "./World/Character";
 import InputController from "./Ui/InputController";
+import GUI from "./Utils/GUI";
 
 let instance = null;
 
@@ -18,6 +19,7 @@ export default class App {
 
     this.canvas = document.querySelector(".canvas");
     this.scene = new THREE.Scene();
+    this.gui = new GUI()
     this.camera = new Camera();
     this.renderer = new Render();
     this.world = new World();

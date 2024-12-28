@@ -1,35 +1,57 @@
 import * as THREE from "three";
 import App from "../App";
+import assetStore from "../Utils/AssetStore";
 
 export default class Environment {
   constructor() {
     this.app = new App();
     this.scene = this.app.scene;
     this.physics = this.app.world.physics;
+    this.pane = this.app.gui.pane
+
+    this.assetStore = assetStore.getState()
+    this.environment = this.assetStore.loadAssets.environment
 
     this.loadEnvironment();
-    this.addGround();
-    this.addWalls();
-    this.addStairs();
-    this.addMeshes();
+    this.addLight();
+    // this.addGround();
+    // this.addWalls();
+    // this.addStairs();
+    // this.addMeshes();
   }
 
   loadEnvironment() {
-    const pointLight = new THREE.AmbientLight("white", 2);
+    this.environmentScene = this.environment.scene
+    this.environmentScene.scale.setScalar(5)
+    this.environmentScene.position.set(-4.8 , 0 , -7.4)
+    this.environmentScene.rotation.set(0 , -.60 , 0)
 
+    this.environmentScene.traverse((obj) => {
+      if (obj.isMesh) {
+        this.physics.add(obj , "fixed" , "cuboid")
+      }
+    })
+
+    this.scene.add(this.environmentScene)
+  }
+  
+  addLight () {
+    const pointLight = new THREE.AmbientLight("white", 2);
+  
     this.directionalLight = new THREE.DirectionalLight("white", 1);
     this.directionalLight.position.set(1, 1, 1);
     this.directionalLight.castShadow = true;
-
+  
     this.scene.add(pointLight, this.directionalLight);
   }
 
   addGround() {
-    const groundGeometry = new THREE.BoxGeometry(100, 1, 100);
+    const groundGeometry = new THREE.BoxGeometry(1000, 4, 1000);
     const groundMaterial = new THREE.MeshStandardMaterial({
       color: "turquoise",
     });
     this.groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+    this.groundMesh.position.y = -1
     this.scene.add(this.groundMesh);
     this.physics.add(this.groundMesh, "fixed", "cuboid");
   }
