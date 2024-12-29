@@ -22,14 +22,14 @@ export default class Character {
   }
 
   instantiateCharacter() {
-    const geometry = new THREE.BoxGeometry(2.6, 7.5, 2);
+    const geometry = new THREE.BoxGeometry(2.5, 7.5, 2);
     const material = new THREE.MeshStandardMaterial({
       color: "green",
       wireframe: true,
       visible: true
     });
     this.character = new THREE.Mesh(geometry, material);
-    this.character.position.set(0, 100, 0);
+    this.character.position.set(0, 80, 0);
     if (appStateStore.getState().physicsReady) {
       this.characterController =
         this.physics.world.createCharacterController(0.01);

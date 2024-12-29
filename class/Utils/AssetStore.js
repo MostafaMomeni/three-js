@@ -7,7 +7,7 @@ export const assetToLoad = [
     type: "model",
   },
   {
-    path: "/model/enviroment.glb",
+    path: "/model/environment.glb",
     id: "environment",
     type: "model",
   },

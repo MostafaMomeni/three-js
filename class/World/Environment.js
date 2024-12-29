@@ -23,8 +23,8 @@ export default class Environment {
   loadEnvironment() {
     this.environmentScene = this.environment.scene
     this.environmentScene.scale.setScalar(5)
-    this.environmentScene.position.set(-4.8 , 0 , -7.4)
-    this.environmentScene.rotation.set(0 , -.60 , 0)
+    this.environmentScene.position.set(-30 , 0 , -40)
+    this.environmentScene.rotation.set(0 , -.5 , 0)
 
     this.environmentScene.traverse((obj) => {
       if (obj.isMesh) {
@@ -46,7 +46,7 @@ export default class Environment {
   }
 
   addGround() {
-    const groundGeometry = new THREE.BoxGeometry(1000, 4, 1000);
+    const groundGeometry = new THREE.BoxGeometry(100, 4, 100);
     const groundMaterial = new THREE.MeshStandardMaterial({
       color: "turquoise",
     });
