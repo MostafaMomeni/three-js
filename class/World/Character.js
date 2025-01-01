@@ -29,7 +29,7 @@ export default class Character {
       visible: true
     });
     this.character = new THREE.Mesh(geometry, material);
-    this.character.position.set(0, 80, 0);
+    this.character.position.set(0, 10, 0);
     if (appStateStore.getState().physicsReady) {
       this.characterController =
         this.physics.world.createCharacterController(0.01);
@@ -43,6 +43,7 @@ export default class Character {
 
     if (this.avatar) {
       const avatar = this.avatar.scene;
+
       avatar.rotation.y = Math.PI;
       avatar.position.y = -3.75;
       avatar.scale.set(4, 4, 4);

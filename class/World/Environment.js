@@ -7,10 +7,10 @@ export default class Environment {
     this.app = new App();
     this.scene = this.app.scene;
     this.physics = this.app.world.physics;
-    this.pane = this.app.gui.pane
+    this.pane = this.app.gui.pane;
 
-    this.assetStore = assetStore.getState()
-    this.environment = this.assetStore.loadAssets.environment
+    this.assetStore = assetStore.getState();
+    this.environment = this.assetStore.loadAssets.environment;
 
     this.loadEnvironment();
     this.addLight();
@@ -21,28 +21,76 @@ export default class Environment {
   }
 
   loadEnvironment() {
-    this.environmentScene = this.environment.scene
-    this.environmentScene.scale.setScalar(5)
-    this.environmentScene.position.set(-30 , 0 , -40)
-    this.environmentScene.rotation.set(0 , -.5 , 0)
+    this.environmentScene = this.environment.scene;
+    this.environmentScene.scale.setScalar(5);
+    this.environmentScene.position.set(-30, 0, -40);
+    this.environmentScene.rotation.set(0, -0.5, 0);
 
-    this.environmentScene.traverse((obj) => {
-      if (obj.isMesh) {
-        this.physics.add(obj , "fixed" , "cuboid")
+    const physicalObjects = [
+      "three",
+      "terrain",
+      "rock",
+      "stair",
+      "gate",
+      "ground",
+    ];
+
+    const shadowCasters = ["three", "terrain", "rock", "stair", "gate"];
+
+    const shadowReceivers = ["ground", "terrain"];
+
+    for (const child of this.environmentScene.children) {
+      const isPhysicalObject = physicalObjects.some((key) =>
+        child.name.includes(key)
+      );
+      if (isPhysicalObject) {
+        child.traverse((obj) => {
+          if (obj.isMesh) {
+            this.physics.add(obj, "fixed", "cuboid");
+          }
+        });
       }
-    })
 
-    this.scene.add(this.environmentScene)
+      const isShadowCasters = shadowCasters.some((key) =>
+        child.name.includes(key)
+      );
+      if (isShadowCasters) {
+        child.traverse((obj) => {
+          if (obj.isMesh) {
+            obj.castShadow = true;
+          }
+        });
+      }
+      const isShadowReceivers = shadowReceivers.some((key) =>
+        child.name.includes(key)
+      );
+      if (isShadowReceivers) {
+        child.traverse((obj) => {
+          if (obj.isMesh) {
+            obj.receiveShadow = true;
+          }
+        });
+      }
+    }
+
+    this.scene.add(this.environmentScene);
   }
-  
-  addLight () {
-    const pointLight = new THREE.AmbientLight("white", 2);
-  
+
+  addLight() {
+    const ambientLight = new THREE.AmbientLight("white", 2);
+
     this.directionalLight = new THREE.DirectionalLight("white", 1);
     this.directionalLight.position.set(1, 1, 1);
     this.directionalLight.castShadow = true;
-  
-    this.scene.add(pointLight, this.directionalLight);
+    this.directionalLight.shadow.camera.top = 100;
+    this.directionalLight.shadow.camera.right = 100;
+    this.directionalLight.shadow.camera.left = -100;
+    this.directionalLight.shadow.camera.bottom = -100;
+    this.directionalLight.shadow.bias = -0.002;
+    this.directionalLight.shadow.normalBias = 0.072;
+
+
+    this.scene.add(ambientLight, this.directionalLight);
   }
 
   addGround() {
@@ -51,7 +99,7 @@ export default class Environment {
       color: "turquoise",
     });
     this.groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
-    this.groundMesh.position.y = -1
+    this.groundMesh.position.y = -1;
     this.scene.add(this.groundMesh);
     this.physics.add(this.groundMesh, "fixed", "cuboid");
   }
@@ -114,7 +162,11 @@ export default class Environment {
 
     for (let i = 0; i < 100; i++) {
       const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set((Math.random() - 0.5) * 5, Math.random()  + 20, Math.random());
+      mesh.position.set(
+        (Math.random() - 0.5) * 5,
+        Math.random() + 20,
+        Math.random()
+      );
       mesh.scale.setScalar(Math.random() + 0.5);
       mesh.rotation.set(
         Math.random() * Math.PI,
