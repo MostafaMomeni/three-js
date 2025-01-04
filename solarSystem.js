@@ -1,28 +1,25 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 const scene = new THREE.Scene();
 
-const sphereGeometry = new THREE.SphereGeometry(1 , 32 , 32);
+const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
 
 const textureLoader = new THREE.TextureLoader();
 
-const sunTexture = textureLoader.load(
-  "public/layered-planetary-bl/layered-planetary_albedo.png"
-);
-const marsTexture = textureLoader.load(
-  "public/alien-carnivorous-plant-bl/alien-carniverous-plant_albedo.png"
-);
+const sunTexture = textureLoader.load("/solar-system-textures/8k_sun.jpg");
+const marsTexture = textureLoader.load("/solar-system-textures/8k_mars.jpg");
 const mercuryTexture = textureLoader.load(
-  "public/brick-wall-bl1/brick-wall_albedo.png"
+  "/solar-system-textures/8k_mercury.jpg"
 );
-const venusTexture = textureLoader.load("public/denim-bl/denim1_albedo.png");
+const venusTexture = textureLoader.load(
+  "/solar-system-textures/4k_venus_atmosphere.jpg"
+);
 const earthTexture = textureLoader.load(
-  "public/gray-polished-granite-bl/gray-polished-granite_albedo.png"
+  "/solar-system-textures/8k_earth_daymap.jpg"
 );
-const moonTexture = textureLoader.load(
-  "public/planet_surface_Normal-bl/planet_surface_Height.png"
-);
+const moonTexture = textureLoader.load("/solar-system-textures/8k_moon.jpg");
 
 const sunMaterial = new THREE.MeshBasicMaterial({
   map: sunTexture,
@@ -55,6 +52,7 @@ const planets = [
     speed: 0.01,
     material: mercuryMaterial,
     moons: [],
+    type: "texture",
   },
   {
     name: "venus",
@@ -63,6 +61,7 @@ const planets = [
     speed: 0.007,
     material: venusMaterial,
     moons: [],
+    type: "texture",
   },
   {
     name: "earth",
@@ -70,6 +69,7 @@ const planets = [
     distance: 20,
     speed: 0.005,
     material: earthMaterial,
+    type: "texture",
     moons: [
       {
         name: "moon",
@@ -84,6 +84,7 @@ const planets = [
     radius: 0.7,
     distance: 25,
     speed: 0.003,
+    type: "texture",
     material: marsMaterial,
     moons: [
       {
@@ -100,29 +101,76 @@ const planets = [
       },
     ],
   },
+  {
+    name: "saturn",
+    radius: 1,
+    distance: 30,
+    speed: 0.002,
+    url: "/solar-system-textures/saturn.glb",
+    moons: [
+      {
+        name: "phobos",
+        radius: 0.1,
+        distance: 2,
+        speed: 0.02,
+      },
+      {
+        name: "deimos",
+        radius: 0.2,
+        distance: 3,
+        speed: 0.015,
+      },
+    ],
+    type: "model",
+  },
 ];
 
-const planetMeshes = planets.map((item) => {
-  const planeMesh = new THREE.Mesh(sphereGeometry, item.material);
+let planetsArray = [];
 
-  planeMesh.scale.setScalar(item.radius);
-  planeMesh.position.x = item.distance;
+planets.map((item) => {
+  if (item.type == "texture") {
+    const planeMesh = new THREE.Mesh(sphereGeometry, item.material);
 
-  const moonsMeshes = item.moons.forEach((moon) => {
-    const moonMesh = new THREE.Mesh(sphereGeometry, moonMaterial);
+    planeMesh.scale.setScalar(item.radius);
+    planeMesh.position.x = item.distance;
 
-    moonMesh.scale.setScalar(moon.radius);
-    moonMesh.position.x = moon.distance;
+    item.moons.forEach((moon) => {
+      const moonMesh = new THREE.Mesh(sphereGeometry, moonMaterial);
 
-    planeMesh.add(moonMesh);
-  });
+      moonMesh.scale.setScalar(moon.radius);
+      moonMesh.position.x = moon.distance;
 
-  scene.add(planeMesh);
-  return planeMesh;
+      planeMesh.add(moonMesh);
+    });
+
+    scene.add(planeMesh);
+    planetsArray.push(planeMesh);
+  } else {
+    const gltfLoader = new GLTFLoader();
+
+    gltfLoader.load(item.url, (loadedModel) => {
+      const sceneGltf = loadedModel.scene;
+      sceneGltf.position.x = item.distance;
+      const material = sceneGltf.children[0].material;
+      material.envMapIntensity = 1;
+
+      item.moons.forEach((moon) => {
+        const moonMesh = new THREE.Mesh(sphereGeometry, moonMaterial);
+
+        moonMesh.scale.setScalar(moon.radius);
+        moonMesh.position.x = moon.distance;
+
+        sceneGltf.add(moonMesh);
+      });
+
+      scene.add(sceneGltf);
+      planetsArray.push(sceneGltf);
+    });
+  }
 });
 
-// const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-// scene.add(ambientLight);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
 
 const pointLight = new THREE.PointLight(0xffffff, 700);
 scene.add(pointLight);
@@ -155,18 +203,38 @@ window.addEventListener("resize", () => {
 });
 
 const renderLoop = () => {
-  planetMeshes.forEach((planet, index) => {
-    planet.rotation.y += planets[index].speed;
-    planet.position.x = Math.sin(planet.rotation.y) * planets[index].distance;
-    planet.position.z = Math.cos(planet.rotation.y) * planets[index].distance;
+  planetsArray?.forEach((planet, index) => {
+    if (planet) {
+      planet.rotation.y += planets[index].speed;
+      planet.position.x = Math.sin(planet.rotation.y) * planets[index].distance;
+      planet.position.z = Math.cos(planet.rotation.y) * planets[index].distance;
 
-    planet.children.forEach((moon, moonIndex) => {
-      moon.rotation.y += planets[index].moons[moonIndex].speed;
-      moon.position.x =
-        Math.sin(moon.rotation.y) * planets[index].moons[moonIndex].distance;
-      moon.position.z =
-        Math.cos(moon.rotation.y) * planets[index].moons[moonIndex].distance;
-    });
+      if (planet.type !== "Group") {
+        planet.children.forEach((moon, moonIndex) => {
+          moon.rotation.y += planets[index].moons[moonIndex]?.speed;
+          moon.position.x =
+            Math.sin(moon.rotation.y) *
+            planets[index].moons[moonIndex]?.distance;
+          moon.position.z =
+            Math.cos(moon.rotation.y) *
+            planets[index].moons[moonIndex]?.distance;
+        });
+      } else {
+        let modelIndexCounter = 0;
+        planet.children.forEach((moon) => {
+          if (!moon.name) {
+            moon.rotation.y += planets[index].moons[modelIndexCounter]?.speed;
+            moon.position.x =
+              Math.sin(moon.rotation.y) *
+              planets[index].moons[modelIndexCounter]?.distance;
+            moon.position.z =
+              Math.cos(moon.rotation.y) *
+              planets[index].moons[modelIndexCounter]?.distance;
+            modelIndexCounter++;
+          }
+        });
+      }
+    }
   });
 
   controls.update();

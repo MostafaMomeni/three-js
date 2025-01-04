@@ -18,6 +18,7 @@ const backGroundCubeMap = cubeTextureLoader.load([
 scene.background = backGroundCubeMap;
 // scene.environment = backGroundCubeMap
 
+
 const gltfLoader = new GLTFLoader();
 
 // gltfLoader.load("public/glTF-Sample-Models-main/2.0/BoomBox/glTF/BoomBox.gltf" , (gltf)=>{
@@ -30,13 +31,14 @@ const gltfLoader = new GLTFLoader();
 // })
 
  const model = await gltfLoader.loadAsync(
-  "public/glTF-Sample-Models-main/2.0/BoomBox/glTF/BoomBox.gltf"
+  "/solar-system-textures/saturn.glb"
 );
 const sceneGltf = model.scene;
-sceneGltf.scale.setScalar(50);
+// sceneGltf.scale.setScalar();
 const material = sceneGltf.children[0].material;
 material.envMap = backGroundCubeMap;
 material.envMapIntensity = 1;
+
 scene.add(sceneGltf);
 
 const ambientLight = new THREE.AmbientLight("white", 0.5);

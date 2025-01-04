@@ -11,7 +11,7 @@ const cubeTextureLoader = new THREE.CubeTextureLoader()
 // cubeTextureLoader.setPath("/bg")
 
 const sunTexture = textureLoader.load("/denim-bl/denim1_albedo.png")
-const earthTexture = textureLoader.load("/alien-carnivorous-plant-bl/alien-carniverous-plant_albedo.png")
+const earthTexture = textureLoader.load("/solar-system-textures/8k_earth_daymap.jpg")
 const moonTexture = textureLoader.load("/brick-wall-bl1/brick-wall_albedo.png")
 const marsTexture = textureLoader.load("/layered-planetary-bl/layered-planetary_albedo.png")
 

@@ -90,6 +90,7 @@ export default class Environment {
     this.directionalLight.shadow.normalBias = 0.072;
 
 
+
     this.scene.add(ambientLight, this.directionalLight);
   }
 

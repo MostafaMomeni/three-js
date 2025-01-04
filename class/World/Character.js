@@ -26,7 +26,7 @@ export default class Character {
     const material = new THREE.MeshStandardMaterial({
       color: "green",
       wireframe: true,
-      visible: true
+      visible: false
     });
     this.character = new THREE.Mesh(geometry, material);
     this.character.position.set(0, 10, 0);
