@@ -103,7 +103,7 @@ const planets = [
   },
   {
     name: "saturn",
-    radius: 1,
+    radius: 2,
     distance: 30,
     speed: 0.002,
     url: "/solar-system-textures/saturn.glb",
@@ -113,12 +113,6 @@ const planets = [
         radius: 0.1,
         distance: 2,
         speed: 0.02,
-      },
-      {
-        name: "deimos",
-        radius: 0.2,
-        distance: 3,
-        speed: 0.015,
       },
     ],
     type: "model",
@@ -151,6 +145,7 @@ planets.map((item) => {
     gltfLoader.load(item.url, (loadedModel) => {
       const sceneGltf = loadedModel.scene;
       sceneGltf.position.x = item.distance;
+      sceneGltf.scale.setScalar(item.radius);
       const material = sceneGltf.children[0].material;
       material.envMapIntensity = 1;
 

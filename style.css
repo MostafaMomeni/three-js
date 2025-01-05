@@ -57,3 +57,48 @@ body{
   visibility: hidden;
   opacity: 0;
 }
+#myModal{
+  position: absolute;
+  left: 50vw;
+  top: 50vh;
+  transform: translate(-50% , -50%);
+  background-color: rgba(181, 169, 169, 0.552);
+  backdrop-filter: blur(10px);
+  min-width: 300px;
+  width: 40%;
+  padding: 30px;
+  border-radius: 15px;
+  color: white;
+  text-align: center;
+  transition: 0.4s;
+}
+#modalTitle{
+  font-size: 35px;
+  margin-bottom: 15px;
+}
+#modalDescription{
+  margin-bottom: 30px;
+  font-size: 25px;
+}
+.close{
+  position: absolute;
+  bottom: -70px;
+  background-color: rgba(149, 149, 149, 0.733);
+  backdrop-filter: blur(10px);
+  padding: 15px 40px;
+  border-radius: 35px;
+  color: white;
+  font-size: 22px;
+  left: 50%;
+  font-weight: bold;
+  transform: translate(-50%);
+  cursor: pointer;
+}
+.fadeOut{
+  visibility: hidden;
+  opacity: 0;
+}
+.fadeIn{
+  visibility: visible;
+  opacity: 1;
+}
