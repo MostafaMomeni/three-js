@@ -6,6 +6,13 @@ const scene = new THREE.Scene();
 
 const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
 
+const loader = new THREE.TextureLoader();
+loader.load("/solar-system-textures/8k_stars_milky_way.jpg", (texture) => {
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  scene.background = texture;
+  scene.environment = texture; 
+});
+
 const textureLoader = new THREE.TextureLoader();
 
 const sunTexture = textureLoader.load("/solar-system-textures/8k_sun.jpg");
@@ -20,6 +27,15 @@ const earthTexture = textureLoader.load(
   "/solar-system-textures/8k_earth_daymap.jpg"
 );
 const moonTexture = textureLoader.load("/solar-system-textures/8k_moon.jpg");
+const jupiterTexture = textureLoader.load(
+  "/solar-system-textures/8k_jupiter.jpg"
+);
+const neptuneTexture = textureLoader.load(
+  "/solar-system-textures/2k_neptune.jpg"
+);
+const uranusTexture = textureLoader.load(
+  "/solar-system-textures/2k_uranus.jpg"
+);
 
 const sunMaterial = new THREE.MeshBasicMaterial({
   map: sunTexture,
@@ -39,35 +55,45 @@ const venusMaterial = new THREE.MeshStandardMaterial({
 const marsMaterial = new THREE.MeshStandardMaterial({
   map: marsTexture,
 });
+const jupiterMaterial = new THREE.MeshStandardMaterial({
+  map: jupiterTexture,
+});
+const neptuneMaterial = new THREE.MeshStandardMaterial({
+  map: neptuneTexture,
+});
+const uranusMaterial = new THREE.MeshStandardMaterial({
+  map: uranusTexture,
+});
 
 const sun = new THREE.Mesh(sphereGeometry, sunMaterial);
 sun.scale.setScalar(5);
+sun.rotation.y = 20;
 scene.add(sun);
 
 const planets = [
   {
     name: "mercury",
-    radius: 0.5,
+    radius: 0.4,
     distance: 10,
-    speed: 0.01,
+    speed: 0.01415,
     material: mercuryMaterial,
     moons: [],
     type: "texture",
   },
   {
     name: "venus",
-    radius: 0.8,
-    distance: 15,
-    speed: 0.007,
+    radius: 0.6,
+    distance: 18.7,
+    speed: 0.010162,
     material: venusMaterial,
     moons: [],
     type: "texture",
   },
   {
     name: "earth",
-    radius: 1,
-    distance: 20,
-    speed: 0.005,
+    radius: 0.8,
+    distance: 25.8,
+    speed: 0.0091,
     material: earthMaterial,
     type: "texture",
     moons: [
@@ -81,9 +107,9 @@ const planets = [
   },
   {
     name: "mars",
-    radius: 0.7,
-    distance: 25,
-    speed: 0.003,
+    radius: 0.5,
+    distance: 39,
+    speed: 0.0085,
     type: "texture",
     material: marsMaterial,
     moons: [
@@ -102,20 +128,92 @@ const planets = [
     ],
   },
   {
-    name: "saturn",
+    name: "Jupiter",
     radius: 2,
-    distance: 30,
-    speed: 0.002,
-    url: "/solar-system-textures/saturn.glb",
+    distance: 60,
+    speed: 0.006044,
+    type: "texture",
+    material: jupiterMaterial,
     moons: [
       {
-        name: "phobos",
+        name: "io",
         radius: 0.1,
         distance: 2,
         speed: 0.02,
       },
+      {
+        name: "Europa",
+        radius: 0.2,
+        distance: 3,
+        speed: 0.015,
+      },
     ],
+  },
+  {
+    name: "Uranus",
+    radius: 1,
+    distance: 100,
+    speed: 0.004023,
+    type: "texture",
+    material: uranusMaterial,
+    moons: [
+      {
+        name: "Miranda",
+        radius: 0.1,
+        distance: 2,
+        speed: 0.02,
+      },
+      {
+        name: "Ariel",
+        radius: 0.2,
+        distance: 3,
+        speed: 0.015,
+      },
+    ],
+  },
+  {
+    name: "Neptune",
+    radius: 1,
+    distance: 120,
+    speed: 0.003018,
+    type: "texture",
+    material: neptuneMaterial,
+    moons: [
+      {
+        name: "Triton",
+        radius: 0.1,
+        distance: 2,
+        speed: 0.02,
+      },
+      {
+        name: "Naiad",
+        radius: 0.2,
+        distance: 3,
+        speed: 0.015,
+      },
+    ],
+  },
+  {
+    name: "saturn",
+    radius: 1.7,
+    distance: 80,
+    speed: 0.005032,
+    url: "/solar-system-textures/saturn.glb",
     type: "model",
+    moons: [
+      {
+        name: "Titan",
+        radius: 0.1,
+        distance: 2,
+        speed: 0.02,
+      },
+      {
+        name: "Enceladus",
+        radius: 0.2,
+        distance: 3,
+        speed: 0.015,
+      },
+    ],
   },
 ];
 
@@ -164,7 +262,7 @@ planets.map((item) => {
   }
 });
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, 2);
 scene.add(ambientLight);
 
 const pointLight = new THREE.PointLight(0xffffff, 700);
@@ -174,10 +272,11 @@ const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
-  10000
+  1000000
 );
 
-camera.position.z = 50;
+camera.position.y = 60;
+camera.position.x = -40;
 
 const canvas = document.querySelector(".canvas");
 

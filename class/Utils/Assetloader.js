@@ -8,7 +8,7 @@ export default class AssetLoader {
         this.assetStore = assetStore.getState()
         this.assetToLoad = assetToLoad
         this.addLoadedAsset = assetStore.addLoadedAsset
-        this.createLoader()
+        this.createLoader() 
         this.startLoading()
     }
 
